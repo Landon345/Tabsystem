@@ -68,14 +68,17 @@ export default function MyTabs() {
               </thead>
               <tbody>
                 {tab.items.map((item, index) => (
-                  <Items
-                    key={index}
-                    id={item.id}
-                    name={item.name}
-                    price={item.price}
-                    date={item.created_at}
-                    category={item.category}
-                  />
+                  <>
+                    {console.log("item", item)}
+                    <Items
+                      key={index}
+                      id={item.id}
+                      name={item.name}
+                      price={item.price}
+                      date={item.created_at}
+                      category={item.category}
+                    />
+                  </>
                 ))}
               </tbody>
             </MyTable>

@@ -113,7 +113,10 @@ class TabController extends Controller
 
         foreach ($tabs as $t) {
             $t->user;
-            $t->items;
+            $items = $t->items;
+            foreach($items as $i){
+                $i->category;
+            }
         }
         return $tabs;
     }
