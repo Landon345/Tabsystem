@@ -93,14 +93,32 @@ export default function Dashboard() {
   return (
     <Box minH="100vh" bg="first300" color="white">
       <Navbar />
-      <h1>Amount of tabs = {tabsData.length}</h1>
-      <h1>Amount of users = {usersData.length}</h1>
-      <h1>Amount of items on tabs= {itemsDataTotal.length}</h1>
-      <h1>Amount of money on all tabs= ${totalBalanceData.total}</h1>
+      <Box d="flex" flexWrap="wrap">
+        <Box p="30px" fontSize="25px">
+          Amount of tabs = {tabsData.length}
+        </Box>
+        <Box p="30px" fontSize="25px">
+          Amount of users = {usersData.length}
+        </Box>
+        <Box p="30px" fontSize="25px">
+          Amount of items on tabs= {itemsDataTotal.length}
+        </Box>
+        <Box p="30px" fontSize="25px">
+          Amount of money on all tabs= ${totalBalanceData.total}
+        </Box>
 
-      <h1>Total price of all items= ${totalItemPricesData.total}</h1>
-      <h1>Amount of items per category= {itemsData.length}</h1>
-      <Box d="grid" gridTemplateColumns="1fr 2fr">
+        <Box p="30px" fontSize="25px">
+          Total price of all items= ${totalItemPricesData.total}
+        </Box>
+        <Box p="30px" fontSize="25px">
+          Amount of{" "}
+          {category
+            ? categoryData.filter((cat) => cat.id == category)[0].name
+            : "all items"}
+          = {itemsData.length}
+        </Box>
+      </Box>
+      <Box d="grid" gridTemplateColumns="1fr 2fr" mx="10%">
         <Box htmlFor="category" color="White" fontSize="25px">
           Category
         </Box>
