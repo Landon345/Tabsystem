@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\models\Category;
+use App\models\Items;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
@@ -63,5 +64,20 @@ class CategoryController extends Controller
         } catch (Exception $e) {
             return response()->json(["msg" => $e->getMessage()]);
         }
+    }
+    public function totalPriceOfCategory($id){
+
+    $items = "";
+        if($id == 0){
+            $items = Items::all();
+        }else{
+            $items = Items::where('category_id', $id)->get();
+        }
+
+        $total = 0;
+        foreach ($items as $i) {
+            $total += $i->price;
+        }
+        return response()->json(["total" => $total]);
     }
 }

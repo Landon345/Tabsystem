@@ -5,8 +5,10 @@ import { useQuery, useMutation, queryCache } from "react-query";
 import { GetTabs, GetTabsTotalBalance } from "../../Api/Tabs";
 import { GetUsers } from "../../Api/Users";
 import { GetItems, GetItemsTotalPrice } from "../../Api/Items";
-import { GetCategories } from "../../Api/Categories";
+import { GetCategories, GetTotalPriceOfCategory } from "../../Api/Categories";
 import TabCard from "../TabDetail/TabCard";
+import * as queries from "../../utils/queries";
+import * as Placeholders from "../../utils/placeholders";
 import {
   Input,
   Grid,
@@ -18,127 +20,160 @@ import {
 } from "@chakra-ui/core";
 
 export default function Dashboard() {
-  const [category, setCategory] = useState("");
+  const [category, setCategory] = useState(0);
   //Use the useQuery supported by react-query to fetch and cache the data.
-  const { status: status1, data: tabsData, refetch: refetchTabs } = useQuery(
-    "GetTabs",
-    GetTabs,
-    {}
-  );
-  const { status: status2, data: usersData } = useQuery(
-    "GetUsers",
-    GetUsers,
-    {}
-  );
-  const { status: status3, data: itemsData } = useQuery(
-    ["GetItems", category],
-    GetItems,
-    {}
-  );
-  const { status: status4, data: itemsDataTotal } = useQuery(
-    ["GetItems", ""],
-    GetItems,
-    {}
-  );
-  const { status: status5, data: categoryData } = useQuery(
-    "GetCategories",
-    GetCategories,
-    {}
-  );
-  const { status: status6, data: totalBalanceData } = useQuery(
+  const getTabsQuery = useQuery("GetTabs", GetTabs, {});
+  const getUsersQuery = useQuery("GetUsers", GetUsers, {});
+  const getItemsQuery = useQuery(["GetItems", category], GetItems, {});
+  const getTotalItemsQuery = useQuery(["GetItems", ""], GetItems, {});
+  const getCategoriesQuery = useQuery("GetCategories", GetCategories, {});
+  const getTotalBalanceQuery = useQuery(
     "GetTabsTotalBalance",
     GetTabsTotalBalance,
     {}
   );
-  const { status: status7, data: totalItemPricesData } = useQuery(
+  const getItemPricesQuery = useQuery(
     "GetItemsTotalPrice",
     GetItemsTotalPrice,
     {}
   );
 
-  //if loading return Loading with a spinner and skeleton
-  if (
-    status1 === "loading" ||
-    status2 === "loading" ||
-    status3 === "loading" ||
-    status4 === "loading" ||
-    status5 === "loading" ||
-    status6 === "loading" ||
-    status7 === "loading"
-  ) {
-    return (
-      <Box minH="100vh" bg="first300">
-        <Navbar />
-        <Box textAlign="center" fontSize="50px" mt="60px">
-          Loading... <Spinner />
-        </Box>
-        {/* <Skeleton height="50px" my="10px" mx="10%" />
-        <Skeleton height="50px" my="10px" mx="10%" />
-        <Skeleton height="50px" my="10px" mx="10%" /> */}
-      </Box>
-    );
-  }
-  //if error return the error
-  if (
-    status1 === "error" ||
-    status2 === "error" ||
-    status3 === "error" ||
-    status4 === "error" ||
-    status5 === "error" ||
-    status6 === "error" ||
-    status7 === "error"
-  ) {
-    return <div className="">error</div>;
-  }
-  return (
-    <Box minH="100vh" bg="first300" color="white">
-      <Navbar />
-      <Box d="flex" flexWrap="wrap">
-        <Box p="30px" fontSize="25px">
-          Amount of tabs = {tabsData.length}
-        </Box>
-        <Box p="30px" fontSize="25px">
-          Amount of users = {usersData.length}
-        </Box>
-        <Box p="30px" fontSize="25px">
-          Amount of items on tabs= {itemsDataTotal.length}
-        </Box>
-        <Box p="30px" fontSize="25px">
-          Amount of money on all tabs= ${totalBalanceData.total}
-        </Box>
+  const getTotalPriceOfCategoryQuery = useQuery(
+    ["GetTotalPriceOfCategory", category],
+    GetTotalPriceOfCategory,
+    {}
+  );
 
-        <Box p="30px" fontSize="25px">
-          Total price of all items= ${totalItemPricesData.total}
-        </Box>
-        <Box p="30px" fontSize="25px">
-          Amount of{" "}
-          {category
-            ? categoryData.filter((cat) => cat.id == category)[0].name
-            : "all items"}
-          = {itemsData.length}
+  return (
+    <>
+      <Box minH="100vh" bg="first300" color="white">
+        <Navbar />
+        <Box mx="5%" mt="50px">
+          <h1>Totals</h1>
+          {queries.areAnyLoading(
+            getTabsQuery,
+            getUsersQuery,
+            getTotalItemsQuery,
+            getTotalBalanceQuery,
+            getItemPricesQuery
+          ) && <Placeholders.LoadingState />}
+
+          {queries.areAnyFailed(
+            getTabsQuery,
+            getUsersQuery,
+            getTotalItemsQuery,
+            getTotalBalanceQuery,
+            getItemPricesQuery
+          ) && <Placeholders.FailedState />}
+
+          {queries.areAllLoaded(
+            getTabsQuery,
+            getUsersQuery,
+            getTotalItemsQuery,
+            getTotalBalanceQuery,
+            getItemPricesQuery
+          ) && (
+            <>
+              <Box d="flex" flexWrap="wrap">
+                <Box p="30px" fontSize="25px">
+                  Amount of tabs = {getTabsQuery.data.length}
+                </Box>
+                <Box p="30px" fontSize="25px">
+                  Amount of users = {getUsersQuery.data.length}
+                </Box>
+                <Box p="30px" fontSize="25px">
+                  Amount of items on tabs= {getTotalItemsQuery.data.length}
+                </Box>
+                <Box p="30px" fontSize="25px">
+                  Amount of money on all tabs= $
+                  {getTotalBalanceQuery.data.total}
+                </Box>
+
+                <Box p="30px" fontSize="25px">
+                  Total price of all items= ${getItemPricesQuery.data.total}
+                </Box>
+              </Box>
+            </>
+          )}
+
+          <h1>Per Category</h1>
+          {queries.areAnyLoading(getCategoriesQuery) && (
+            <Placeholders.LoadingState />
+          )}
+
+          {queries.areAnyFailed(getCategoriesQuery) && (
+            <Placeholders.FailedState />
+          )}
+
+          {queries.areAllLoaded(getCategoriesQuery) && (
+            <>
+              <Box d="grid" gridTemplateColumns="1fr 2fr" mx="10%" my="60px">
+                <Box htmlFor="category" color="White" fontSize="25px">
+                  Category
+                </Box>
+                <Select
+                  name="category"
+                  id="category"
+                  onChange={({ target }) => setCategory(target.value)}
+                  width="200px"
+                  height="30px"
+                  color="black"
+                  value={category}
+                >
+                  <option key={0} value={0}>
+                    none
+                  </option>
+                  {getCategoriesQuery.data.map((category) => (
+                    <option key={category.id} value={category.id}>
+                      {category.name}
+                    </option>
+                  ))}
+                </Select>
+              </Box>
+            </>
+          )}
+          {queries.areAnyLoading(
+            getItemsQuery,
+            getCategoriesQuery,
+            getTotalPriceOfCategoryQuery
+          ) && <Placeholders.LoadingState />}
+
+          {queries.areAnyFailed(
+            getItemsQuery,
+            getCategoriesQuery,
+            getTotalPriceOfCategoryQuery
+          ) && <Placeholders.FailedState />}
+
+          {queries.areAllLoaded(
+            getItemsQuery,
+            getCategoriesQuery,
+            getTotalPriceOfCategoryQuery
+          ) && (
+            <>
+              <Box d="flex" flexWrap="wrap">
+                <Box p="30px" fontSize="25px">
+                  Amount of{" "}
+                  {category != 0
+                    ? getCategoriesQuery.data.filter(
+                        (cat) => cat.id == category
+                      )[0].name
+                    : "all items"}
+                  = {getItemsQuery.data.length}
+                </Box>
+                <Box p="30px" fontSize="25px">
+                  Total Price of{" "}
+                  {category != 0
+                    ? getCategoriesQuery.data.filter(
+                        (cat) => cat.id == category
+                      )[0].name
+                    : "all items"}
+                  = ${getTotalPriceOfCategoryQuery.data.total}
+                </Box>
+              </Box>
+            </>
+          )}
         </Box>
       </Box>
-      <Box d="grid" gridTemplateColumns="1fr 2fr" mx="10%">
-        <Box htmlFor="category" color="White" fontSize="25px">
-          Category
-        </Box>
-        <Select
-          name="category"
-          id="category"
-          onChange={({ target }) => setCategory(target.value)}
-          width="200px"
-          height="30px"
-          color="black"
-          value={category}
-        >
-          <option value={""}>none</option>
-          {categoryData.map((category) => (
-            <option key={category.id} value={category.id}>
-              {category.name}
-            </option>
-          ))}
-        </Select>
-      </Box>
-    </Box>
+    </>
   );
 }
