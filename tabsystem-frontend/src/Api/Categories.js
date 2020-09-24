@@ -26,6 +26,19 @@ export const GetCategory = async (key, id) => {
   console.log(data);
   return data;
 };
+export const GetTotalPriceOfCategory = async (key, id) => {
+  const response = await fetch(`${BASE_URL}/categorypricetotal/${id}`, {
+    method: "GET",
+    headers: {
+      "content-type": "application/json",
+      Accept: "application/json",
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+  const data = await response.json();
+  console.log(data);
+  return data;
+};
 export const PostCategory = async (newCategory) => {
   const response = await fetch(`${BASE_URL}/category`, {
     method: "POST",

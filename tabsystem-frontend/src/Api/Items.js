@@ -39,6 +39,7 @@ export const GetItemsTotalPrice = async (key) => {
   console.log(data);
   return data;
 };
+
 export const PostItem = async (newItem) => {
   const response = await fetch(`${BASE_URL}/item`, {
     method: "POST",

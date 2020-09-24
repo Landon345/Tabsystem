@@ -124,4 +124,6 @@ class ItemController extends Controller
         }
         return response()->json(["total" => $total]);
     }
+
+   
 }

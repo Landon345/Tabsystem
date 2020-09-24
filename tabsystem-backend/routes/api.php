@@ -33,22 +33,23 @@ Route::middleware('auth:api')->group(function () {
 
         Route::get('/item', 'ItemController@index');
         Route::get('/item/{id}', 'ItemController@show');
-        Route::get('item/price/total', 'ItemController@totalPrices');
+        Route::get('/item/price/total', 'ItemController@totalPrices');
         Route::post('/item', 'ItemController@storeItem');
         Route::put('/item', 'ItemController@storeItem');
         // delete without refund
         Route::delete('/item/{id}', 'ItemController@destroy');
         //delete with refund
         Route::delete('/itemrefund/{id}', 'ItemController@destroyRefund');
-
+        
         Route::get('/commonitem', 'CommonItemController@index');
         Route::get('/commonitem/{id}', 'CommonItemController@show');
         Route::post('/commonitem', 'CommonItemController@storeCommonItem');
         Route::put('/commonitem', 'CommonItemController@storeCommonItem');
         Route::delete('/commonitem/{id}', 'CommonItemController@destroy');
-
+        
         Route::get('/category', 'CategoryController@index');
         Route::get('/category/{id}', 'CategoryController@show');
+        Route::get('/categorypricetotal/{id}', 'CategoryController@totalPriceOfCategory');
         Route::post('/category', 'CategoryController@storeCategory');
         Route::put('/category', 'CategoryController@storeCategory');
         Route::delete('/category/{id}', 'CategoryController@destroy');
